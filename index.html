@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI 模型选型指南 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=DM+Mono:wght@400;500&family=Noto+Serif+SC:wght@400;600&family=Noto+Sans+SC:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f5f0e8;
+    --paper-dark: #ece7db;
+    --ink: #0d0d0b;
+    --ink-mid: #3a3830;
+    --ink-light: #7a7568;
+    --ink-faint: #c0bbb0;
+    --red: #c0180c;
+    --serif: 'Playfair Display', 'Noto Serif SC', serif;
+    --mono: 'DM Mono', monospace;
+    --sans: 'Noto Sans SC', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-weight: 300; line-height: 1.6; }
+
+  .masthead { border-bottom: 3px solid var(--ink); padding: 0 32px 10px; }
+  .masthead-top { display:flex; align-items:flex-end; justify-content:space-between; padding:18px 0 10px; border-bottom:1px solid var(--ink); margin-bottom:8px; flex-wrap:wrap; gap:8px; }
+  .paper-name { font-family:var(--serif); font-size:clamp(2rem,5vw,3.5rem); font-weight:900; letter-spacing:-0.02em; line-height:1; }
+  .paper-name span { color:var(--red); }
+  .masthead-meta { font-family:var(--mono); font-size:11px; letter-spacing:0.08em; color:var(--ink-light); text-align:right; line-height:1.7; }
+  .edition-bar { display:flex; align-items:center; justify-content:space-between; font-family:var(--mono); font-size:10.5px; letter-spacing:0.1em; color:var(--ink-mid); text-transform:uppercase; flex-wrap:wrap; gap:8px; }
+  .nav-row { display:flex; }
+  .nav-item { padding:0 14px; border-left:1px solid var(--ink-mid); cursor:pointer; transition:color 0.15s; }
+  .nav-item:first-child { border-left:none; padding-left:0; }
+  .nav-item:hover { color:var(--red); }
+  .nav-item.active { color:var(--red); font-weight:500; }
+
+  .page { max-width:1140px; margin:0 auto; padding:0 32px 56px; }
+  .section-label { display:flex; align-items:center; gap:8px; margin:24px 0 16px; }
+  .slr { width:16px; height:2px; background:var(--red); flex-shrink:0; }
+  .slt { font-family:var(--mono); font-size:10px; letter-spacing:0.15em; text-transform:uppercase; color:var(--red); }
+  .pullquote { font-family:var(--serif); font-size:clamp(1.2rem,2.8vw,1.8rem); font-style:italic; font-weight:700; color:var(--ink); border-top:3px solid var(--ink); border-bottom:1px solid var(--ink); padding:14px 0 12px; margin:0 0 20px; line-height:1.3; }
+  .pullquote em { color:var(--red); font-style:normal; }
+  .filter-bar { display:flex; gap:0; border-top:1px solid var(--ink); border-bottom:1px solid var(--ink); margin-bottom:20px; flex-wrap:wrap; }
+  .fpill { font-family:var(--mono); font-size:10.5px; letter-spacing:0.1em; text-transform:uppercase; padding:7px 16px; cursor:pointer; color:var(--ink-light); border-right:1px solid var(--ink-faint); background:transparent; border-top:none; border-bottom:none; border-left:none; transition:all 0.15s; }
+  .fpill:last-child { border-right:none; }
+  .fpill:hover, .fpill.active { background:var(--ink); color:var(--paper); }
+  .cost-toolbar { display:none; align-items:center; flex-wrap:wrap; gap:12px 16px; margin:-4px 0 16px; padding:10px 14px; border:1px solid var(--ink-faint); background:var(--paper-dark); }
+  .cost-sort-btn { font-family:var(--mono); font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; padding:8px 14px; cursor:pointer; border:1.5px solid var(--ink); background:var(--paper); color:var(--ink); transition:all 0.15s; }
+  .cost-sort-btn:hover { background:var(--ink); color:var(--paper); }
+  .cost-toolbar-hint { font-size:11px; color:var(--ink-light); max-width:640px; line-height:1.45; }
+  .pricing-block { padding:10px 0 2px; border-left:3px solid var(--ink-mid); padding-left:10px; margin-top:2px; }
+  .pricing-head { font-family:var(--mono); font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-mid); margin-bottom:6px; }
+  .pricing-row { display:flex; justify-content:space-between; gap:12px; font-size:11px; line-height:1.5; padding:3px 0; border-bottom:1px dotted var(--ink-faint); }
+  .pricing-row:last-of-type { border-bottom:none; }
+  .pricing-k { color:var(--ink-light); flex-shrink:0; }
+  .pricing-v { font-family:var(--mono); font-size:10.5px; color:var(--ink); text-align:right; }
+  .pricing-note { font-size:10px; color:var(--ink-faint); font-style:italic; margin-top:6px; line-height:1.4; }
+  .cards-split { display:flex; flex-direction:column; gap:0; }
+  .cards-region { display:flex; flex-direction:column; gap:0; }
+  .cards-region + .cards-region { margin-top:20px; }
+  .region-bar { display:flex; align-items:baseline; gap:10px; padding:0 0 10px; border-bottom:2px solid var(--ink); margin-bottom:0; }
+  .region-tag { font-family:var(--serif); font-size:15px; font-weight:700; color:var(--ink); }
+  .region-sub { font-family:var(--mono); font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-light); }
+  .cards-grid { display:grid; gap:0; border-top:2px solid var(--ink); border-left:1px solid var(--ink-faint); }
+  .cards-grid-flow { grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); }
+  .cards-grid-cn { grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .cards-grid-global { grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .provider-card { padding:18px; border-right:1px solid var(--ink-faint); border-bottom:1px solid var(--ink-faint); display:flex; flex-direction:column; gap:12px; transition:background 0.15s; }
+  .provider-card:hover { background:var(--paper-dark); }
+  .card-top { display:flex; align-items:flex-start; gap:12px; }
+  .logo-box { width:36px; height:36px; border:1.5px solid var(--ink); display:flex; align-items:center; justify-content:center; font-family:var(--mono); font-size:11px; font-weight:500; flex-shrink:0; background:#fff; overflow:hidden; }
+  .logo-img { width:30px; height:30px; object-fit:contain; display:block; }
+  .provider-name { font-family:var(--serif); font-size:16px; font-weight:700; line-height:1.2; }
+  .provider-company { font-family:var(--mono); font-size:10px; color:var(--ink-light); letter-spacing:0.06em; margin-top:2px; }
+  .open-badge { font-family:var(--mono); font-size:9px; padding:2px 6px; letter-spacing:0.07em; text-transform:uppercase; margin-top:3px; display:inline-block; border:1px solid; }
+  .badge-open { border-color:#2a6e3a; color:#2a6e3a; }
+  .badge-closed { border-color:var(--ink-light); color:var(--ink-light); }
+  .badge-mixed { border-color:#7a5a00; color:#7a5a00; }
+  .rule-thin { height:1px; background:var(--ink-faint); }
+  .model-list { display:flex; flex-direction:column; }
+  .model-row { display:grid; grid-template-columns:auto 1fr; gap:10px; align-items:baseline; padding:5px 0; border-bottom:1px dotted var(--ink-faint); }
+  .model-row:last-child { border-bottom:none; }
+  .model-name { font-family:var(--mono); font-size:11px; color:var(--ink); white-space:nowrap; }
+  .model-desc { font-size:11px; color:var(--ink-light); line-height:1.45; }
+  .best-for { border-left:3px solid var(--red); padding-left:10px; }
+  .best-label { font-family:var(--mono); font-size:9px; color:var(--red); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:3px; }
+  .best-text { font-size:12px; color:var(--ink-mid); line-height:1.5; }
+  .card-note { font-size:10.5px; color:var(--ink-light); line-height:1.5; font-style:italic; }
+  .scenario-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(320px,1fr)); gap:0; border-top:2px solid var(--ink); border-left:1px solid var(--ink-faint); }
+  .scenario-card { padding:18px; border-right:1px solid var(--ink-faint); border-bottom:1px solid var(--ink-faint); display:flex; flex-direction:column; gap:10px; transition:background 0.15s; }
+  .scenario-card:hover { background:var(--paper-dark); }
+  .scenario-head { display:flex; align-items:flex-start; gap:10px; }
+  .scenario-icon { font-size:17px; flex-shrink:0; margin-top:1px; }
+  .scenario-name { font-family:var(--serif); font-size:14px; font-weight:700; color:var(--ink); line-height:1.3; }
+  .scenario-desc { font-size:11.5px; color:var(--ink-light); margin-top:2px; }
+  .scenario-why { font-size:11.5px; color:var(--ink-mid); padding:8px 10px; border:1px solid var(--ink-faint); background:var(--paper-dark); line-height:1.55; }
+  .first-block { border-left:3px solid var(--ink); padding-left:10px; }
+  .first-label { font-family:var(--mono); font-size:9px; color:var(--ink-light); letter-spacing:0.12em; text-transform:uppercase; margin-bottom:3px; }
+  .first-models { font-family:var(--mono); font-size:11.5px; color:var(--ink); line-height:1.6; }
+  .quick-wrap { overflow-x:auto; }
+  .quick-table { width:100%; border-collapse:collapse; font-size:12.5px; min-width:640px; border-top:2px solid var(--ink); }
+  .quick-table th { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-light); padding:9px 14px; text-align:left; border-bottom:1px solid var(--ink); font-weight:400; background:var(--paper-dark); }
+  .quick-table td { padding:10px 14px; border-bottom:1px solid var(--ink-faint); color:var(--ink-mid); vertical-align:top; line-height:1.5; }
+  .quick-table tr:hover td { background:var(--paper-dark); }
+  .quick-table td:first-child { font-family:var(--serif); font-size:13px; font-weight:700; color:var(--ink); }
+  .pick { font-family:var(--mono); font-size:11.5px; color:var(--ink); }
+  .tier { display:inline-block; font-family:var(--mono); font-size:9px; padding:1px 5px; margin-right:5px; margin-bottom:2px; border:1px solid; }
+  .t1 { border-color:var(--ink); color:var(--ink); }
+  .t2 { border-color:var(--ink-faint); color:var(--ink-light); }
+  .tab-content { display:none; }
+  .tab-content.active { display:block; }
+  footer { border-top:3px solid var(--ink); padding:16px 32px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+  .footer-name { font-family:var(--serif); font-size:20px; font-weight:900; }
+  .footer-name span { color:var(--red); }
+  .footer-meta { font-family:var(--mono); font-size:10px; color:var(--ink-light); letter-spacing:0.08em; text-align:right; }
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+  .cards-split,.cards-grid,.scenario-grid,.quick-wrap { animation:fadeIn 0.2s ease; }
+  @media (max-width:1100px) {
+    .cards-grid-cn { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .cards-grid-global { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  }
+  @media (max-width:640px) {
+    .masthead,.page,footer { padding-left:16px; padding-right:16px; }
+    .masthead { padding-left:16px; padding-right:16px; }
+    .cards-grid-flow,.scenario-grid { grid-template-columns:1fr; }
+    .cards-grid-cn,.cards-grid-global { grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="masthead">
+  <div class="masthead-top">
+    <div class="paper-name">AI<span>.</span>GUIDE</div>
+    <div class="masthead-meta">
+      VOL. 1 &nbsp;|&nbsp; Q1 2026 &nbsp;|&nbsp; GLOBAL EDITION<br>
+      SEVEN PLATFORMS · 30+ MODELS · MARCH 2026
+    </div>
+  </div>
+  <div class="edition-bar">
+    <span>主流 AI 模型选型参考手册</span>
+    <div class="nav-row" id="nav">
+      <span class="nav-item active" onclick="switchTab('providers',this)">PLATFORMS</span>
+      <span class="nav-item" onclick="switchTab('scenarios',this)">SCENARIOS</span>
+      <span class="nav-item" onclick="switchTab('quickref',this)">QUICK REF</span>
+    </div>
+  </div>
+</div>
+<div class="page">
+  <div class="tab-content active" id="tab-providers">
+    <div class="section-label"><div class="slr"></div><div class="slt">01 · 各平台现役模型</div></div>
+    <div class="pullquote">七大平台，各有所长——<em>选对模型，事半功倍。</em></div>
+    <div class="filter-bar">
+      <button class="fpill active" onclick="filterCards('all',this)">ALL</button>
+      <button class="fpill" onclick="filterCards('cn',this)">中文优先</button>
+      <button class="fpill" onclick="filterCards('code',this)">代码</button>
+      <button class="fpill" onclick="filterCards('reason',this)">推理</button>
+      <button class="fpill" onclick="filterCards('multi',this)">多模态</button>
+      <button class="fpill" onclick="filterCards('open',this)">开源</button>
+      <button class="fpill" onclick="filterCards('agent',this)">Agent</button>
+      <button class="fpill" onclick="filterCards('cost',this)">费用</button>
+    </div>
+    <div id="cost-toolbar" class="cost-toolbar" style="display:none" aria-live="polite">
+      <button type="button" id="cost-sort-btn" class="cost-sort-btn" onclick="toggleCostSort()">费用排序：高 → 低</button>
+      <span class="cost-toolbar-hint">各平台公开 <strong>API</strong> 计价量级对照；国内一行 4 家、海外一行 3 家，各行内按下方按钮顺序排序。以官网计费页为准。</span>
+    </div>
+    <div id="cards-grid"></div>
+    <p style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);margin-top:12px;">* 模型线迭代频繁，信息以各平台官方文档为准 · 「费用」页价格为示意量级，排序指数可自改源码中 <code style="font-size:9px;">pricing.sortKey</code> · Compiled March 2026</p>
+  </div>
+  <div class="tab-content" id="tab-scenarios">
+    <div class="section-label"><div class="slr"></div><div class="slt">02 · 按场景选模型</div></div>
+    <div class="pullquote">不同任务需要不同工具——<em>场景匹配比参数排名更重要。</em></div>
+    <div class="scenario-grid" id="scenario-grid"></div>
+  </div>
+  <div class="tab-content" id="tab-quickref">
+    <div class="section-label"><div class="slr"></div><div class="slt">03 · 快速对照表</div></div>
+    <div class="pullquote">需求 → 首选 → 备选 → <em>一句话理由。</em></div>
+    <div class="quick-wrap">
+      <table class="quick-table">
+        <thead><tr><th>需求场景</th><th>首选</th><th>备选</th><th>核心理由</th></tr></thead>
+        <tbody id="quick-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<footer>
+  <div class="footer-name">AI<span>.</span>GUIDE</div>
+  <div class="footer-meta">Personal reference · Not affiliated with any platform<br>Compiled by Claude Sonnet 4.6 · March 2026</div>
+</footer>
+<script>
+const ORDER_CN=['doubao','kimi','deepseek','qwen'];
+const ORDER_GLOBAL=['chatgpt','claude','gemini'];
+let currentFilter='all';
+let costSortHighFirst=true;
+const providers=[
+  {id:'doubao',region:'cn',name:'豆包 Doubao',company:'字节跳动 ByteDance',abbr:'豆',logoUrl:'assets/logos/doubao.png',access:'closed',tags:['cn','multi','agent'],pricing:{sortKey:15,lines:[{label:'旗舰输入 / 1M tokens',value:'约 $0.1–0.4 量级'},{label:'Mini 档',value:'约 $0.03 量级起'}],note:'人民币结算为主，以火山引擎 / 豆包企业 API 为准'},models:[{name:'Seed 2.0 Pro',desc:'旗舰推理+Agent，对标GPT-5'},{name:'Seed 2.0 Lite',desc:'性价比工作流，成本低5倍'},{name:'Seed 2.0 Code',desc:'编程专项调优'},{name:'Seed 2.0 Mini',desc:'低延迟·高并发批处理'}],best:'中文日常对话、企业级Agent工作流（价格极低）',note:'API需国内实名认证；全系原生多模态（视频/图像/文本）'},
+  {id:'kimi',region:'cn',name:'Kimi',company:'Moonshot AI',abbr:'K',logoUrl:'assets/logos/kimi.png',access:'open',tags:['code','reason','multi','open','agent'],pricing:{sortKey:38,lines:[{label:'K2.5 API（约）',value:'中高档 $/M，高于国产开源线'},{label:'K2 开源自部署',value:'仅算力与运维'}],note:'以 Moonshot 开放平台价目为准'},models:[{name:'K2.5',desc:'旗舰多模态+Agent Swarm，256k上下文'},{name:'K2 Instruct',desc:'基础版，前端代码/知识问答'},{name:'K2-thinking',desc:'深度推理强制开启版'}],best:'代码生成、视觉转代码、多Agent并行研究任务',note:'开源可自部署；Agent Swarm可协调100个子Agent并行'},
+  {id:'chatgpt',region:'global',name:'ChatGPT / OpenAI',company:'OpenAI',abbr:'OAI',logoUrl:'assets/logos/openai.png',access:'closed',tags:['code','reason','multi','agent'],pricing:{sortKey:55,lines:[{label:'GPT-5.x API',value:'旗舰档约 $15–30+/M（输入侧）'},{label:'ChatGPT 订阅',value:'Plus / Pro 月费另计'}],note:'模型与档位多，Thinking / Pro 加价；以 OpenAI 定价页为准'},models:[{name:'GPT-5.4 Thinking',desc:'最强推理，Plus/Pro 3000条/周'},{name:'GPT-5.3 Instant',desc:'当前默认，快速通用，免费可用'},{name:'GPT-5.4 Pro',desc:'极限推理，Pro/Enterprise专享'},{name:'GPT-5.3 Mini',desc:'超出限额降级版'}],best:'通用能力最强、生态最完善，DALL-E/Sora工具集成丰富',note:'GPT-4o/4.1已退出前台；API仍可调用；版本迭代极快'},
+  {id:'deepseek',region:'cn',name:'DeepSeek',company:'深度求索',abbr:'DS',logoUrl:'assets/logos/deepseek.png',access:'open',tags:['code','reason','open','cn'],pricing:{sortKey:8,lines:[{label:'V3 / R1 输入 / 1M',value:'约 $0.14–0.55（含峰时浮动）'},{label:'开源自托管',value:'自付 GPU / 机房'}],note:'国产区常有活动价；以 platform.deepseek.com 为准'},models:[{name:'V3.2',desc:'当前旗舰通用，混合推理架构'},{name:'V3.1-Terminus',desc:'SWE-bench代码评测提升40%'},{name:'R1-0528',desc:'推理专项，数学/逻辑链式思考'},{name:'V3-Coder',desc:'代码专项（V3基础微调）'}],best:'高性价比推理+代码、开源自部署、数学科研严谨任务',note:'R2/V4尚未发布；部分政治话题存在内容限制'},
+  {id:'qwen',region:'cn',name:'Qwen 通义',company:'Alibaba Cloud',abbr:'Q',logoUrl:'assets/logos/qwen.png',access:'mixed',tags:['cn','multi','open','agent','code'],pricing:{sortKey:30,lines:[{label:'百炼 / Model Studio',value:'按模型分档，小模型极低'},{label:'Qwen3.5 开源权重',value:'仅算力'}],note:'阿里云国际站与国内线计价不同'},models:[{name:'Qwen3.5 Plus',desc:'旗舰闭源，支持201语言'},{name:'Qwen3.5 (397B)',desc:'开源MoE，文本+图像+视频'},{name:'Qwen3-Max',desc:'云端最强推理，含thinking模式'},{name:'Qwen3-Coder',desc:'代码专项'},{name:'Qwen3.5 0.8B~9B',desc:'边缘/端侧小模型系列'}],best:'多语言/跨语种任务、端侧部署、阿里云生态集成',note:'开源Apache 2.0；Alibaba承诺继续开源路线'},
+  {id:'claude',region:'global',name:'Claude',company:'Anthropic',abbr:'An',logoUrl:'assets/logos/claude.png',access:'closed',tags:['code','reason','agent','multi'],pricing:{sortKey:60,lines:[{label:'Opus 4.x 输入 / 1M',value:'约 $15+ 量级'},{label:'Sonnet / Haiku',value:'显著低于 Opus'}],note:'超长上下文与 batch 可能有折扣'},models:[{name:'Opus 4.6',desc:'旗舰Agent+编程，1M上下文已GA'},{name:'Sonnet 4.6',desc:'接近Opus性能，最佳日用性价比'},{name:'Haiku 4.5',desc:'轻量高速，媲美旧版Sonnet编程'}],best:'长链路Agent、企业代码分析、写作推理、指令遵循最强',note:'1M context正式可用；Opus 4.6支持Agent Teams协作'},
+  {id:'gemini',region:'global',name:'Gemini',company:'Google DeepMind',abbr:'G',logoUrl:'assets/logos/gemini.png',access:'mixed',tags:['code','reason','multi','agent'],pricing:{sortKey:28,lines:[{label:'3.1 Flash-Lite',value:'约 $0.25/M 输入（公开档）'},{label:'3.1 Pro / Deep Think',value:'中高档按量'}],note:'Google AI Studio 与 Vertex AI 计价不同'},models:[{name:'Gemini 3.1 Pro',desc:'LMArena 1501，vibe coding第一'},{name:'Gemini 3.1 Deep Think',desc:'超级推理，Ultra用户专享'},{name:'Gemini 3.1 Flash',desc:'速度+推理并重，免费层默认'},{name:'Gemini 3.1 Flash-Lite',desc:'极低成本，$0.25/M tokens'}],best:'多模态（视频/音频/图像）、vibe coding、Google全家桶集成',note:'Gemini 3.0 Pro已退役，请用3.1版；NotebookLM集成；免费额度慷慨'}
+];
+const scenarios=[
+  {icon:'💬',name:'中文日常对话 / 办公助手',desc:'写报告、改邮件、头脑风暴、总结会议',first:'豆包 Seed 2.0 Lite · Qwen3-Max · Kimi K2.5',why:'中文语感自然，速度快，豆包生态集成字节系产品'},
+  {icon:'⌨️',name:'写代码 / Debug / 代码审查',desc:'日常编程任务，代码补全，错误修复',first:'Claude Sonnet 4.6 · Kimi K2.5 · GPT-5.3 Instant',why:'Sonnet 4.6指令遵循极强；Kimi K2.5视觉转代码突出'},
+  {icon:'🏗️',name:'大型代码库 / 架构设计',desc:'分析整个repo、长链路软件工程任务',first:'Claude Opus 4.6 · Gemini 3.1 Pro',why:'Opus 4.6 1M上下文已GA，任务horizon最长；Gemini vibe coding第一'},
+  {icon:'🔢',name:'数学推理 / 竞赛 / 科研',desc:'AIME、GPQA等高难度数理逻辑',first:'GPT-5.4 Thinking · Gemini 3.1 Deep Think · Kimi K2.5',why:'GPT-5.4 Thinking推理效率最高；Gemini Deep Think专为科研设计'},
+  {icon:'🤖',name:'Agent工作流 / 自动化',desc:'多步骤自动完成、工具调用、长任务执行',first:'Claude Opus 4.6 · Kimi K2.5 Agent Swarm',why:'Claude Opus支持Agent Teams；Kimi可协调100个并行子Agent'},
+  {icon:'🖼️',name:'图像/视频理解 · 多模态',desc:'看图问答、视频分析、文档图表解析',first:'Gemini 3.1 Pro · GPT-5.4 Thinking · 豆包 Seed 2.0 Pro',why:'Gemini原生多模态最强；豆包视频理解在中文场景有优势'},
+  {icon:'🌐',name:'视觉转代码 / UI生成',desc:'把设计稿/截图直接生成前端代码',first:'Kimi K2.5 · Gemini 3.1 Pro · GPT-5.3 Instant',why:'Kimi K2.5是视觉转代码标杆；Gemini WebDev Arena第一'},
+  {icon:'📚',name:'长文档分析 / 知识库问答',desc:'超长PDF、报告摘要、跨文档综合',first:'Claude Opus 4.6 · Gemini 3.1 Pro',why:'两者均支持1M token上下文，Gemini有NotebookLM集成'},
+  {icon:'💰',name:'高并发API / 低成本批处理',desc:'大规模调用、成本敏感型生产部署',first:'DeepSeek V3.2 · 豆包 Seed 2.0 Mini · Gemini Flash-Lite',why:'DeepSeek开源自部署成本极低；豆包Mini $0.03/M输入'},
+  {icon:'🔒',name:'私有化部署 / 数据不出境',desc:'企业合规要求、本地推理、信息安全',first:'DeepSeek V3.2/R1 · Qwen3.5开源版 · Kimi K2.5',why:'三者均为开源/开权重模型，可本地部署，无API数据泄露风险'},
+  {icon:'✍️',name:'英文写作 / 翻译 / 创作',desc:'专业英文报告、营销文案、创意写作',first:'Claude Sonnet 4.6 · GPT-5.3 Instant',why:'Claude写作语感精准；GPT-5生成内容更口语化'},
+  {icon:'📊',name:'数据分析 / 商业报告',desc:'解读图表、提取洞察、制作分析框架',first:'Claude Sonnet 4.6 · GPT-5.3 Instant · Gemini 3.1 Flash',why:'Claude指令遵循强、结构化输出好；Gemini Flash性价比高'}
+];
+const quickRef=[
+  {need:'极限数理推理',first:'GPT-5.4 Thinking',alt:'Gemini 3.1 Deep Think',why:'Thinking模式推理深度最高'},
+  {need:'日常代码助手',first:'Claude Sonnet 4.6',alt:'Kimi K2.5',why:'指令精确，上下文长，调试一把过'},
+  {need:'大型repo分析',first:'Claude Opus 4.6',alt:'Gemini 3.1 Pro',why:'1M context + Agent执行能力'},
+  {need:'中文对话/办公',first:'豆包 Seed 2.0 Lite',alt:'Qwen3-Max',why:'字节生态+低价，中文语感好'},
+  {need:'图片转代码',first:'Kimi K2.5',alt:'GPT-5.3 Instant',why:'视觉转代码标杆测评'},
+  {need:'视频/多模态理解',first:'Gemini 3.1 Pro',alt:'豆包 Seed 2.0 Pro',why:'Gemini原生多模态架构领先'},
+  {need:'自动化Agent',first:'Claude Opus 4.6',alt:'Kimi K2.5 Swarm',why:'最长任务horizon；Kimi可100个并行'},
+  {need:'省钱API批处理',first:'DeepSeek V3.2',alt:'Gemini Flash-Lite',why:'开源自部署 or $0.25/M起'},
+  {need:'私有化部署',first:'DeepSeek R1',alt:'Qwen3.5开源版',why:'Apache 2.0，权重公开'},
+  {need:'英文写作',first:'Claude Sonnet 4.6',alt:'GPT-5.3 Instant',why:'Claude写作语感与格式控制最强'},
+  {need:'多语言/小语种',first:'Qwen3.5 Plus',alt:'GPT-5.3 Instant',why:'Qwen支持201种语言'},
+  {need:'Google全家桶集成',first:'Gemini 3.1 Flash',alt:'Gemini 3.1 Pro',why:'Google Workspace原生集成'}
+];
+function pickByOrder(ids){
+  return ids.map(id=>providers.find(p=>p.id===id)).filter(Boolean);
+}
+function cardHtml(p,showPricing){
+  const bc=p.access==='open'?'badge-open':p.access==='closed'?'badge-closed':'badge-mixed';
+  const bt=p.access==='open'?'OPEN SOURCE':p.access==='closed'?'CLOSED':'PARTIAL OPEN';
+  const logo=p.logoUrl
+    ? `<img class="logo-img" src="${p.logoUrl}" alt="${p.name} logo" loading="lazy" onerror="this.parentElement.textContent='${p.logoEmoji||p.abbr}'">`
+    : (p.logoEmoji||p.abbr);
+  const pricingHtml=showPricing&&p.pricing?`<div class="pricing-block"><div class="pricing-head">API 费用参考</div>${p.pricing.lines.map(l=>`<div class="pricing-row"><span class="pricing-k">${l.label}</span><span class="pricing-v">${l.value}</span></div>`).join('')}<p class="pricing-note">${p.pricing.note}</p></div><div class="rule-thin"></div>`:'';
+  return`<div class="provider-card">
+    <div class="card-top">
+      <div class="logo-box">${logo}</div>
+      <div><div class="provider-name">${p.name}</div><div class="provider-company">${p.company}</div><span class="open-badge ${bc}">${bt}</span></div>
+    </div>
+    <div class="rule-thin"></div>
+    ${pricingHtml}
+    <div class="model-list">${p.models.map(m=>`<div class="model-row"><span class="model-name">${m.name}</span><span class="model-desc">${m.desc}</span></div>`).join('')}</div>
+    <div class="best-for"><div class="best-label">最适合</div><div class="best-text">${p.best}</div></div>
+    ${p.note?`<div class="rule-thin"></div><div class="card-note">${p.note}</div>`:''}
+  </div>`;
+}
+function syncCostSortButton(){
+  const b=document.getElementById('cost-sort-btn');
+  if(b) b.textContent=costSortHighFirst?'费用排序：高 → 低':'费用排序：低 → 高';
+}
+function toggleCostSort(){
+  costSortHighFirst=!costSortHighFirst;
+  syncCostSortButton();
+  if(currentFilter==='cost') renderCards('cost');
+}
+function renderCards(filter){
+  const grid=document.getElementById('cards-grid');
+  const tb=document.getElementById('cost-toolbar');
+  if(tb) tb.style.display=filter==='cost'?'flex':'none';
+  if(filter==='cost'){
+    syncCostSortButton();
+    const sortByPrice=(a,b)=>{
+      const ka=a.pricing.sortKey, kb=b.pricing.sortKey;
+      return costSortHighFirst?kb-ka:ka-kb;
+    };
+    const cn=[...pickByOrder(ORDER_CN)].sort(sortByPrice).map(p=>cardHtml(p,true)).join('');
+    const gl=[...pickByOrder(ORDER_GLOBAL)].sort(sortByPrice).map(p=>cardHtml(p,true)).join('');
+    grid.className='cards-split';
+    grid.innerHTML=`<div class="cards-region">
+      <div class="region-bar"><span class="region-tag">国内 · 4 家 · 费用</span><span class="region-sub">China</span></div>
+      <div class="cards-grid cards-grid-cn">${cn}</div>
+    </div>
+    <div class="cards-region">
+      <div class="region-bar"><span class="region-tag">海外 · 3 家 · 费用</span><span class="region-sub">Global</span></div>
+      <div class="cards-grid cards-grid-global">${gl}</div>
+    </div>`;
+    return;
+  }
+  if(filter==='all'){
+    grid.className='cards-split';
+    const cn=pickByOrder(ORDER_CN).map(p=>cardHtml(p,false)).join('');
+    const gl=pickByOrder(ORDER_GLOBAL).map(p=>cardHtml(p,false)).join('');
+    grid.innerHTML=`<div class="cards-region">
+      <div class="region-bar"><span class="region-tag">国内 · 4 家</span><span class="region-sub">China</span></div>
+      <div class="cards-grid cards-grid-cn">${cn}</div>
+    </div>
+    <div class="cards-region">
+      <div class="region-bar"><span class="region-tag">海外 · 3 家</span><span class="region-sub">Global</span></div>
+      <div class="cards-grid cards-grid-global">${gl}</div>
+    </div>`;
+    return;
+  }
+  const list=providers.filter(p=>p.tags.includes(filter));
+  grid.className='cards-grid cards-grid-flow';
+  grid.innerHTML=list.map(p=>cardHtml(p,false)).join('');
+}
+function renderScenarios(){
+  document.getElementById('scenario-grid').innerHTML=scenarios.map(s=>`
+    <div class="scenario-card">
+      <div class="scenario-head"><div class="scenario-icon">${s.icon}</div><div><div class="scenario-name">${s.name}</div><div class="scenario-desc">${s.desc}</div></div></div>
+      <div class="scenario-why">${s.why}</div>
+      <div class="first-block"><div class="first-label">首选模型</div><div class="first-models">${s.first}</div></div>
+    </div>`).join('');
+}
+function renderQuick(){
+  document.getElementById('quick-tbody').innerHTML=quickRef.map(r=>`
+    <tr>
+      <td>${r.need}</td>
+      <td><span class="pick"><span class="tier t1">首选</span>${r.first}</span></td>
+      <td><span class="pick"><span class="tier t2">备选</span>${r.alt}</span></td>
+      <td style="font-size:12px;">${r.why}</td>
+    </tr>`).join('');
+}
+function filterCards(tag,el){
+  currentFilter=tag;
+  if(el){
+    document.querySelectorAll('.fpill').forEach(p=>p.classList.remove('active'));
+    el.classList.add('active');
+  }
+  if(tag==='cost') syncCostSortButton();
+  renderCards(tag);
+}
+function switchTab(tab,el){
+  document.querySelectorAll('.nav-item').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+}
+currentFilter='all';
+renderCards('all');
+renderScenarios();
+renderQuick();
+</script>
+</body>
+</html>
