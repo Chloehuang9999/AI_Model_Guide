@@ -63,7 +63,7 @@
   .region-sub { font-family:var(--mono); font-size:9px; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-light); }
   .cards-grid { display:grid; gap:0; border-top:2px solid var(--ink); border-left:1px solid var(--ink-faint); }
   .cards-grid-flow { grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); }
-  .cards-grid-cn { grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .cards-grid-cn { grid-template-columns:repeat(5,minmax(0,1fr)); }
   .cards-grid-global { grid-template-columns:repeat(3,minmax(0,1fr)); }
   .provider-card { padding:18px; border-right:1px solid var(--ink-faint); border-bottom:1px solid var(--ink-faint); display:flex; flex-direction:column; gap:12px; transition:background 0.15s; }
   .provider-card:hover { background:var(--paper-dark); }
@@ -133,7 +133,7 @@
     <div class="paper-name">AI<span>.</span>GUIDE</div>
     <div class="masthead-meta">
       VOL. 1 &nbsp;|&nbsp; Q1 2026 &nbsp;|&nbsp; GLOBAL EDITION<br>
-      SEVEN PLATFORMS · 30+ MODELS · MARCH 2026
+      EIGHT PLATFORMS · 30+ MODELS · MARCH 2026
     </div>
   </div>
   <div class="edition-bar">
@@ -148,7 +148,7 @@
 <div class="page">
   <div class="tab-content active" id="tab-providers">
     <div class="section-label"><div class="slr"></div><div class="slt">01 · 各平台现役模型</div></div>
-    <div class="pullquote">七大平台，各有所长——<em>选对模型，事半功倍。</em></div>
+    <div class="pullquote">八大平台，各有所长——<em>选对模型，事半功倍。</em></div>
     <div class="filter-bar">
       <button class="fpill active" onclick="filterCards('all',this)">ALL</button>
       <button class="fpill" onclick="filterCards('cn',this)">中文优先</button>
@@ -161,7 +161,7 @@
     </div>
     <div id="cost-toolbar" class="cost-toolbar" style="display:none" aria-live="polite">
       <button type="button" id="cost-sort-btn" class="cost-sort-btn" onclick="toggleCostSort()">费用排序：高 → 低</button>
-      <span class="cost-toolbar-hint">各平台公开 <strong>API</strong> 计价量级对照；国内一行 4 家、海外一行 3 家，各行内按下方按钮顺序排序。以官网计费页为准。</span>
+      <span class="cost-toolbar-hint">各平台公开 <strong>API</strong> 计价量级对照；国内一行 5 家、海外一行 3 家，各行内按下方按钮顺序排序。以官网计费页为准。</span>
     </div>
     <div id="cards-grid"></div>
     <p style="font-family:var(--mono);font-size:10px;color:var(--ink-faint);margin-top:12px;">* 模型线迭代频繁，信息以各平台官方文档为准 · 「费用」页价格为示意量级，排序指数可自改源码中 <code style="font-size:9px;">pricing.sortKey</code> · Compiled March 2026</p>
@@ -184,10 +184,10 @@
 </div>
 <footer>
   <div class="footer-name">AI<span>.</span>GUIDE</div>
-  <div class="footer-meta">Personal reference · Not affiliated with any platform<br>Compiled by Claude Sonnet 4.6 · March 2026</div>
+  <div class="footer-meta">Personal reference · Not affiliated with any platform<br>March 2026</div>
 </footer>
 <script>
-const ORDER_CN=['doubao','kimi','deepseek','qwen'];
+const ORDER_CN=['doubao','kimi','deepseek','qwen','minimax'];
 const ORDER_GLOBAL=['chatgpt','claude','gemini'];
 let currentFilter='all';
 let costSortHighFirst=true;
@@ -198,11 +198,12 @@ const providers=[
   {id:'deepseek',region:'cn',name:'DeepSeek',company:'深度求索',abbr:'DS',logoUrl:'assets/logos/deepseek.png',access:'open',tags:['code','reason','open','cn'],pricing:{sortKey:8,lines:[{label:'V3 / R1 输入 / 1M',value:'约 $0.14–0.55（含峰时浮动）'},{label:'开源自托管',value:'自付 GPU / 机房'}],note:'国产区常有活动价；以 platform.deepseek.com 为准'},models:[{name:'V3.2',desc:'当前旗舰通用，混合推理架构'},{name:'V3.1-Terminus',desc:'SWE-bench代码评测提升40%'},{name:'R1-0528',desc:'推理专项，数学/逻辑链式思考'},{name:'V3-Coder',desc:'代码专项（V3基础微调）'}],best:'高性价比推理+代码、开源自部署、数学科研严谨任务',note:'R2/V4尚未发布；部分政治话题存在内容限制'},
   {id:'qwen',region:'cn',name:'Qwen 通义',company:'Alibaba Cloud',abbr:'Q',logoUrl:'assets/logos/qwen.png',access:'mixed',tags:['cn','multi','open','agent','code'],pricing:{sortKey:30,lines:[{label:'百炼 / Model Studio',value:'按模型分档，小模型极低'},{label:'Qwen3.5 开源权重',value:'仅算力'}],note:'阿里云国际站与国内线计价不同'},models:[{name:'Qwen3.5 Plus',desc:'旗舰闭源，支持201语言'},{name:'Qwen3.5 (397B)',desc:'开源MoE，文本+图像+视频'},{name:'Qwen3-Max',desc:'云端最强推理，含thinking模式'},{name:'Qwen3-Coder',desc:'代码专项'},{name:'Qwen3.5 0.8B~9B',desc:'边缘/端侧小模型系列'}],best:'多语言/跨语种任务、端侧部署、阿里云生态集成',note:'开源Apache 2.0；Alibaba承诺继续开源路线'},
   {id:'claude',region:'global',name:'Claude',company:'Anthropic',abbr:'An',logoUrl:'assets/logos/claude.png',access:'closed',tags:['code','reason','agent','multi'],pricing:{sortKey:60,lines:[{label:'Opus 4.x 输入 / 1M',value:'约 $15+ 量级'},{label:'Sonnet / Haiku',value:'显著低于 Opus'}],note:'超长上下文与 batch 可能有折扣'},models:[{name:'Opus 4.6',desc:'旗舰Agent+编程，1M上下文已GA'},{name:'Sonnet 4.6',desc:'接近Opus性能，最佳日用性价比'},{name:'Haiku 4.5',desc:'轻量高速，媲美旧版Sonnet编程'}],best:'长链路Agent、企业代码分析、写作推理、指令遵循最强',note:'1M context正式可用；Opus 4.6支持Agent Teams协作'},
-  {id:'gemini',region:'global',name:'Gemini',company:'Google DeepMind',abbr:'G',logoUrl:'assets/logos/gemini.png',access:'mixed',tags:['code','reason','multi','agent'],pricing:{sortKey:28,lines:[{label:'3.1 Flash-Lite',value:'约 $0.25/M 输入（公开档）'},{label:'3.1 Pro / Deep Think',value:'中高档按量'}],note:'Google AI Studio 与 Vertex AI 计价不同'},models:[{name:'Gemini 3.1 Pro',desc:'LMArena 1501，vibe coding第一'},{name:'Gemini 3.1 Deep Think',desc:'超级推理，Ultra用户专享'},{name:'Gemini 3.1 Flash',desc:'速度+推理并重，免费层默认'},{name:'Gemini 3.1 Flash-Lite',desc:'极低成本，$0.25/M tokens'}],best:'多模态（视频/音频/图像）、vibe coding、Google全家桶集成',note:'Gemini 3.0 Pro已退役，请用3.1版；NotebookLM集成；免费额度慷慨'}
+  {id:'gemini',region:'global',name:'Gemini',company:'Google DeepMind',abbr:'G',logoUrl:'assets/logos/gemini.png',access:'mixed',tags:['code','reason','multi','agent'],pricing:{sortKey:28,lines:[{label:'3.1 Flash-Lite',value:'约 $0.25/M 输入（公开档）'},{label:'3.1 Pro / Deep Think',value:'中高档按量'}],note:'Google AI Studio 与 Vertex AI 计价不同'},models:[{name:'Gemini 3.1 Pro',desc:'LMArena 1501，vibe coding第一'},{name:'Gemini 3.1 Deep Think',desc:'超级推理，Ultra用户专享'},{name:'Gemini 3.1 Flash',desc:'速度+推理并重，免费层默认'},{name:'Gemini 3.1 Flash-Lite',desc:'极低成本，$0.25/M tokens'}],best:'多模态（视频/音频/图像）、vibe coding、Google全家桶集成',note:'Gemini 3.0 Pro已退役，请用3.1版；NotebookLM集成；免费额度慷慨'},
+  {id:'minimax',region:'cn',name:'MiniMax',company:'稀宇科技 MiniMax',abbr:'Mx',logoUrl:'assets/logos/minimax.png',access:'mixed',tags:['cn','code','reason','open','agent','multi'],pricing:{sortKey:26,lines:[{label:'M2 系列 API / 1M（约）',value:'按模型分档，见开放平台价目'},{label:'M2 开源权重',value:'自托管仅算力'}],note:'以 platform.minimaxi.com 为准；阿里云百炼等渠道单独计价'},models:[{name:'MiniMax-M2',desc:'MoE 旗舰，编程与 Agent 工作流'},{name:'MiniMax-M2.1',desc:'上下文与工具调用优化版'},{name:'Speech / TTS',desc:'语音合成与声音克隆'},{name:'Video',desc:'视频生成与理解'}],best:'编程与 Agent、中文场景、语音/视频多模态 API 一体化',note:'M2 权重 Apache 2.0 可本地部署；API 与开源为两套合规与计费'}
 ];
 const scenarios=[
   {icon:'💬',name:'中文日常对话 / 办公助手',desc:'写报告、改邮件、头脑风暴、总结会议',first:'豆包 Seed 2.0 Lite · Qwen3-Max · Kimi K2.5',why:'中文语感自然，速度快，豆包生态集成字节系产品'},
-  {icon:'⌨️',name:'写代码 / Debug / 代码审查',desc:'日常编程任务，代码补全，错误修复',first:'Claude Sonnet 4.6 · Kimi K2.5 · GPT-5.3 Instant',why:'Sonnet 4.6指令遵循极强；Kimi K2.5视觉转代码突出'},
+  {icon:'⌨️',name:'写代码 / Debug / 代码审查',desc:'日常编程任务，代码补全，错误修复',first:'Claude Sonnet 4.6 · Kimi K2.5 · MiniMax-M2',why:'Sonnet 4.6指令遵循极强；Kimi K2.5视觉转代码突出；MiniMax-M2 面向 Agent 与多文件改动'},
   {icon:'🏗️',name:'大型代码库 / 架构设计',desc:'分析整个repo、长链路软件工程任务',first:'Claude Opus 4.6 · Gemini 3.1 Pro',why:'Opus 4.6 1M上下文已GA，任务horizon最长；Gemini vibe coding第一'},
   {icon:'🔢',name:'数学推理 / 竞赛 / 科研',desc:'AIME、GPQA等高难度数理逻辑',first:'GPT-5.4 Thinking · Gemini 3.1 Deep Think · Kimi K2.5',why:'GPT-5.4 Thinking推理效率最高；Gemini Deep Think专为科研设计'},
   {icon:'🤖',name:'Agent工作流 / 自动化',desc:'多步骤自动完成、工具调用、长任务执行',first:'Claude Opus 4.6 · Kimi K2.5 Agent Swarm',why:'Claude Opus支持Agent Teams；Kimi可协调100个并行子Agent'},
@@ -210,7 +211,7 @@ const scenarios=[
   {icon:'🌐',name:'视觉转代码 / UI生成',desc:'把设计稿/截图直接生成前端代码',first:'Kimi K2.5 · Gemini 3.1 Pro · GPT-5.3 Instant',why:'Kimi K2.5是视觉转代码标杆；Gemini WebDev Arena第一'},
   {icon:'📚',name:'长文档分析 / 知识库问答',desc:'超长PDF、报告摘要、跨文档综合',first:'Claude Opus 4.6 · Gemini 3.1 Pro',why:'两者均支持1M token上下文，Gemini有NotebookLM集成'},
   {icon:'💰',name:'高并发API / 低成本批处理',desc:'大规模调用、成本敏感型生产部署',first:'DeepSeek V3.2 · 豆包 Seed 2.0 Mini · Gemini Flash-Lite',why:'DeepSeek开源自部署成本极低；豆包Mini $0.03/M输入'},
-  {icon:'🔒',name:'私有化部署 / 数据不出境',desc:'企业合规要求、本地推理、信息安全',first:'DeepSeek V3.2/R1 · Qwen3.5开源版 · Kimi K2.5',why:'三者均为开源/开权重模型，可本地部署，无API数据泄露风险'},
+  {icon:'🔒',name:'私有化部署 / 数据不出境',desc:'企业合规要求、本地推理、信息安全',first:'DeepSeek V3.2/R1 · Qwen3.5开源版 · MiniMax-M2 · Kimi K2.5',why:'均为开源/开权重模型，可本地部署，无云端 API 数据出境风险（自建合规前提下）'},
   {icon:'✍️',name:'英文写作 / 翻译 / 创作',desc:'专业英文报告、营销文案、创意写作',first:'Claude Sonnet 4.6 · GPT-5.3 Instant',why:'Claude写作语感精准；GPT-5生成内容更口语化'},
   {icon:'📊',name:'数据分析 / 商业报告',desc:'解读图表、提取洞察、制作分析框架',first:'Claude Sonnet 4.6 · GPT-5.3 Instant · Gemini 3.1 Flash',why:'Claude指令遵循强、结构化输出好；Gemini Flash性价比高'}
 ];
@@ -223,7 +224,8 @@ const quickRef=[
   {need:'视频/多模态理解',first:'Gemini 3.1 Pro',alt:'豆包 Seed 2.0 Pro',why:'Gemini原生多模态架构领先'},
   {need:'自动化Agent',first:'Claude Opus 4.6',alt:'Kimi K2.5 Swarm',why:'最长任务horizon；Kimi可100个并行'},
   {need:'省钱API批处理',first:'DeepSeek V3.2',alt:'Gemini Flash-Lite',why:'开源自部署 or $0.25/M起'},
-  {need:'私有化部署',first:'DeepSeek R1',alt:'Qwen3.5开源版',why:'Apache 2.0，权重公开'},
+  {need:'私有化部署',first:'DeepSeek R1',alt:'MiniMax-M2',why:'Apache 2.0，权重公开'},
+  {need:'国产编程/Agent',first:'MiniMax-M2',alt:'Kimi K2.5',why:'M2 强调工具调用与代码工作流；Kimi 多 Agent 并行'},
   {need:'英文写作',first:'Claude Sonnet 4.6',alt:'GPT-5.3 Instant',why:'Claude写作语感与格式控制最强'},
   {need:'多语言/小语种',first:'Qwen3.5 Plus',alt:'GPT-5.3 Instant',why:'Qwen支持201种语言'},
   {need:'Google全家桶集成',first:'Gemini 3.1 Flash',alt:'Gemini 3.1 Pro',why:'Google Workspace原生集成'}
@@ -273,7 +275,7 @@ function renderCards(filter){
     const gl=[...pickByOrder(ORDER_GLOBAL)].sort(sortByPrice).map(p=>cardHtml(p,true)).join('');
     grid.className='cards-split';
     grid.innerHTML=`<div class="cards-region">
-      <div class="region-bar"><span class="region-tag">国内 · 4 家 · 费用</span><span class="region-sub">China</span></div>
+      <div class="region-bar"><span class="region-tag">国内 · 5 家 · 费用</span><span class="region-sub">China</span></div>
       <div class="cards-grid cards-grid-cn">${cn}</div>
     </div>
     <div class="cards-region">
@@ -287,7 +289,7 @@ function renderCards(filter){
     const cn=pickByOrder(ORDER_CN).map(p=>cardHtml(p,false)).join('');
     const gl=pickByOrder(ORDER_GLOBAL).map(p=>cardHtml(p,false)).join('');
     grid.innerHTML=`<div class="cards-region">
-      <div class="region-bar"><span class="region-tag">国内 · 4 家</span><span class="region-sub">China</span></div>
+      <div class="region-bar"><span class="region-tag">国内 · 5 家</span><span class="region-sub">China</span></div>
       <div class="cards-grid cards-grid-cn">${cn}</div>
     </div>
     <div class="cards-region">

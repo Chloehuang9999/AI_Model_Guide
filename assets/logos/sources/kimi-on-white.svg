@@ -1,7 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Kimi">
-  <!-- White square canvas; centered mark inspired by Kimi / Moonshot app icon (purple tile + moon). -->
-  <rect width="512" height="512" fill="#ffffff"/>
-  <rect x="112" y="112" width="288" height="288" rx="64" fill="#4b2cc8"/>
-  <circle cx="268" cy="256" r="92" fill="#ffffff"/>
-  <circle cx="318" cy="256" r="78" fill="#4b2cc8"/>
-</svg>
