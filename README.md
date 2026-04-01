@@ -2,6 +2,10 @@
 
 静态网页部署目录，主文件为 `index.html`。
 
+## 在线访问
+
+- **Vercel 部署**：<https://ai-model-guide.vercel.app>
+
 ## 本地预览
 
 ```bash
